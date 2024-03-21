@@ -90,7 +90,7 @@ export class MachineLearningComponent implements OnInit {
 
   private buildRiskPayload(machineLearningScore: any): object {
     const modelConfigs = {
-      modelId: 'hts_xgb_1211_jan_2023',
+      modelId: 'hts_xgb_06032024_march_2024',
       encounterDate: new Date().toISOString().slice(0, 10),
       facilityId: '',
       debug: 'true'

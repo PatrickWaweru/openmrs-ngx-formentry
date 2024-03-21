@@ -18,7 +18,7 @@ export class MachineLearningService {
   }
 
   public predictRisk(res) {
-    const prediction = res.result.predictions['probability(1)'];
+    const prediction = res.result.predictions['probability(Positive)'];
 
     const riskThresholds = {
       lowRisk: 0.002625179,

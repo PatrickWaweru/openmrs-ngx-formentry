@@ -50,8 +50,8 @@ export interface MachineResponsePayload {
   result: {
     ModelInputs: PredictionObject;
     predictions: {
-      'probability(0)': number;
-      'probability(1)': number;
+      'probability(Negative)': number;
+      'probability(Positive)': number;
     };
   };
 }
