@@ -20,7 +20,7 @@ import { MockObs } from './mock/mock-obs';
 import { mockTranslationsData } from './mock/mock-translations';
 import { PatientIdentifierAdapter } from 'projects/ngx-formentry/src/form-entry/value-adapters/patient-identifier.adapter';
 
-const adultForm = require('./adult-1.6.json');
+const adultForm = require('./adult-1.7.json');
 const adultFormObs = require('./mock/obs.json');
 const formOrdersPayload = require('./mock/orders.json');
 @Component({

@@ -50,10 +50,11 @@ export class MachineLearningComponent implements OnInit {
 
       this.machineLearningService.fetchPredictionScore(riskPayload).subscribe(
         (res) => {
-          const predictionMessage = this.machineLearningService.predictRisk(
+          const [predictionCategory, predictionMessage]: [number, string] = this.machineLearningService.predictRisk(
             res
           );
-          this.setRiskScore(predictionMessage);
+          console.warn("Got prediction message as: ", predictionMessage);
+          this.setRiskScore(predictionCategory, predictionMessage);
           this.isLoading = false;
         },
         (error) => {
@@ -61,7 +62,7 @@ export class MachineLearningComponent implements OnInit {
           this.isLoading = false;
           this.errorMessage =
             error.message ?? 'An error occurred while fetching risk score';
-          this.setRiskScore(this.errorMessage);
+          this.setRiskScore(1, this.errorMessage);
         }
       );
     }
@@ -116,9 +117,19 @@ export class MachineLearningComponent implements OnInit {
     return questionConcepts;
   }
 
-  private setRiskScore(score: string) {
+  private setRiskScore(score: number, scoreMessage: string) {
+    const riskScoreMessage = this.node.form.searchNodeByQuestionId('riskScoreMessage')[0];
+    riskScoreMessage.control.setValue(scoreMessage);
     const riskScore = this.node.form.searchNodeByQuestionId('riskScore')[0];
-    riskScore.control.setValue(score);
+    if(score == 1) { // Low Risk
+      riskScore.control.setValue("166675AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    } else if(score == 2) { // Medium Risk
+      riskScore.control.setValue("1499AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    } else if(score == 3) { // High Risk
+      riskScore.control.setValue("166674AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    } else if(score == 4) { // Very High Risk
+      riskScore.control.setValue("167164AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    }
   }
 
   extractNumbersOrUuid(inputStr) {

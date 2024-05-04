@@ -9,22 +9,33 @@ export class MachineLearningService {
   constructor(private http: HttpClient) {}
 
   public fetchPredictionScore(predicationPayload) {
-    const url = `/openmrs/ws/rest/v1/keml/casefindingscore`;
+    // const url = `/openmrs/ws/rest/v1/keml/casefindingscore`;
+    const url = `http://localhost:9677/openmrs/ws/rest/v1/keml/casefindingscore`;
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
-      .set('Access-Control-Allow-Origin', '*');
+      .set('Access-Control-Allow-Origin', '*')
+      .set('Authorization', 'Basic YWRtaW46QWRtaW4xMjM=');
     return this.http.post(url, predicationPayload, { headers: headers });
   }
 
-  public predictRisk(res) {
+  public predictRisk(res): [number, string] {
     const prediction = res.result.predictions['probability(Positive)'];
 
+    const lowRiskThreshold = res.result.thresholds['Medium'];
+    const mediumRiskThreshold = res.result.thresholds['High'];
+    const highRiskThreshold = res.result.thresholds['Very_High'];
+
     const riskThresholds = {
-      lowRisk: 0.002625179,
-      mediumRisk: 0.010638781,
-      highRisk: 0.028924102
+      lowRisk: lowRiskThreshold,
+      mediumRisk: mediumRiskThreshold,
+      highRisk: highRiskThreshold
     };
+
+    console.warn("Low Risk Threshold is: ", lowRiskThreshold);
+    console.warn("Medium Risk Threshold is: ", mediumRiskThreshold);
+    console.warn("High Risk Threshold is: ", highRiskThreshold);
+    console.warn("Got prediction as: ", prediction);
 
     const riskMessages = {
       veryHigh:
@@ -39,17 +50,17 @@ export class MachineLearningService {
     };
 
     if (!prediction) {
-      return riskMessages.noResults;
+      return [0, riskMessages.noResults];
     }
 
     if (prediction > riskThresholds.highRisk) {
-      return riskMessages.veryHigh;
+      return [4, riskMessages.veryHigh];
     } else if (prediction > riskThresholds.mediumRisk) {
-      return riskMessages.high;
+      return [3, riskMessages.high];
     } else if (prediction > riskThresholds.lowRisk) {
-      return riskMessages.medium;
+      return [2, riskMessages.medium];
     } else {
-      return riskMessages.low;
+      return [1, riskMessages.low];
     }
   }
 
