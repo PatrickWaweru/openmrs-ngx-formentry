@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { LeafNode } from '../../form-entry/form-factory/form-node';
 import { ObsAdapterHelper } from '../../form-entry/value-adapters/obs-adapter-helper';
@@ -56,6 +57,7 @@ export class MachineLearningComponent implements OnInit {
           console.warn("Got prediction message as: ", predictionMessage);
           this.setRiskScore(predictionCategory, predictionMessage);
           this.isLoading = false;
+          this.restoreRequiredFields();
         },
         (error) => {
           this.hasError = true;
@@ -63,6 +65,7 @@ export class MachineLearningComponent implements OnInit {
           this.errorMessage =
             error.message ?? 'An error occurred while fetching risk score';
           this.setRiskScore(1, this.errorMessage);
+          this.restoreRequiredFields();
         }
       );
     }
@@ -160,6 +163,28 @@ export class MachineLearningComponent implements OnInit {
       .forEach((node) => {
         node.control.markAsTouched();
       });
+
+    const recommendedHIVTest = this.node.form.searchNodeByQuestionId("reCommeNHiVtest")[0];
+    recommendedHIVTest.control.clearValidators();
+    recommendedHIVTest.control.updateValueAndValidity();
+
+    const referredForTesting = this.node.form.searchNodeByQuestionId("clientReferred")[0];
+    referredForTesting.control.clearValidators();
+    referredForTesting.control.updateValueAndValidity();
+    
+    this.node.form.showErrors = true;
+  }
+
+  // For the final form submission
+  restoreRequiredFields() {
+    const recommendedHIVTest = this.node.form.searchNodeByQuestionId("reCommeNHiVtest")[0];
+    recommendedHIVTest.control.setValidators([Validators.required]);
+    recommendedHIVTest.control.updateValueAndValidity();
+
+    const referredForTesting = this.node.form.searchNodeByQuestionId("clientReferred")[0];
+    referredForTesting.control.setValidators([Validators.required]);
+    referredForTesting.control.updateValueAndValidity();
+
     this.node.form.showErrors = true;
   }
 }
